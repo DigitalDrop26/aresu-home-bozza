@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Formaggi — Formaggi Aresu</title>
+<meta name="description" content="Vengono prodotte circa 40 diverse referenze, dai pecorini DOP, ai formaggi caprini; ricotte fresche e stagionate, e tante altre specialità casearie sarde.">
+<link rel="icon" href="img/sigillo-pieno-arancio.svg">
+<style>
+/* Bozza home — Formaggi Aresu. Token dal design system (../../design-system), prefisso --ar-*.
+   Le animazioni partono solo se GSAP è caricato: senza JS la pagina resta completa e leggibile. */
+@font-face { font-family: 'Montserrat'; font-weight: 100 900; font-display: swap; src: url('font/Montserrat.ttf') format('truetype'); }
+@font-face { font-family: 'Questrial'; font-weight: 400; font-display: swap; src: url('font/Questrial-Regular.ttf') format('truetype'); }
+
+:root {
+  --ar-bianco: #FFFFFF; --ar-panna: #F5EBE6; --ar-sabbia: #DFCFC0;
+  --ar-arancio: #C6733C; --ar-marrone: #945830; --ar-cacao: #563F2D;
+  --bg: #FAF5F2;
+  --fg: var(--ar-cacao);
+  --fg-muted: #7d6a5c;
+  --linea: rgba(86, 63, 45, .16);
+  --titoli: 'Loew', 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+  --testo: 'Questrial', 'Helvetica Neue', Arial, sans-serif;
+  --max: 1360px;
+  --g: clamp(20px, 4.5vw, 64px);
+  --s: clamp(96px, 12vw, 176px);
+  --ease: cubic-bezier(.2, .7, .2, 1);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.65 var(--testo); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+h1, h2, h3 { font-family: var(--titoli); font-weight: 700; color: var(--ar-marrone); margin: 0; letter-spacing: -.01em; }
+p { margin: 0; }
+.wrap { max-width: var(--max); margin: 0 auto; padding-inline: var(--g); }
+.sezione { padding-block: var(--s); }
+.occhiello { font: 700 11px/1.4 var(--titoli); letter-spacing: .24em; text-transform: uppercase; color: var(--ar-arancio); }
+.link { font: 700 12px/1 var(--titoli); letter-spacing: .2em; text-transform: uppercase; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid currentColor; color: var(--ar-marrone);
+  transition: gap .3s var(--ease), color .2s; }
+.link:hover { gap: 20px; color: var(--ar-arancio); }
+.foto { overflow: hidden; background: var(--ar-sabbia); position: relative; }
+.foto img { width: 100%; height: 100%; object-fit: cover; }
+.didascalia { font-size: 13px; color: var(--fg-muted); }
+:focus-visible { outline: 2px solid var(--ar-arancio); outline-offset: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+/* Righe dei titoli: la maschera che fa salire il testo. */
+.riga { display: block; overflow: hidden; padding-bottom: .06em; margin-bottom: -.06em; }
+.riga > span { display: block; }
+
+/* ------------------------------------------------------------------ TESTATA */
+.testata { position: fixed; inset: 0 0 auto; z-index: 30; transition: transform .5s var(--ease), background .4s, border-color .4s;
+  border-bottom: 1px solid transparent; }
+.testata.scrollata { background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom-color: var(--linea); }
+.testata.nascosta { transform: translateY(-100%); }
+.testata .wrap { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 136px; transition: height .4s var(--ease); }
+.testata.scrollata .wrap { height: 96px; }
+.testata nav { display: flex; gap: clamp(20px, 2.4vw, 36px); }
+.testata nav a, .lingue a { font: 700 11px/1 var(--titoli); letter-spacing: .2em; text-transform: uppercase; text-decoration: none; color: var(--fg); opacity: .8; }
+.testata nav a:hover, .lingue a:hover { opacity: 1; color: var(--ar-arancio); }
+.testata .marchio img { width: 116px; height: 116px; transition: width .4s var(--ease), height .4s var(--ease); }
+.testata.scrollata .marchio img { width: 80px; height: 80px; }
+.testata .destra { display: flex; justify-content: flex-end; align-items: center; gap: clamp(20px, 2.4vw, 36px); }
+.lingue { display: flex; gap: 12px; } .lingue a[aria-current] { opacity: 1; color: var(--ar-marrone); }
+.apri-menu { display: none; background: none; border: 0; padding: 10px; margin-left: -10px; cursor: pointer; color: var(--fg); }
+.apri-menu span { display: block; width: 24px; height: 1.5px; background: currentColor; margin: 6px 0; transition: transform .3s var(--ease); }
+.menu-mobile { display: none; }
+
+/* --------------------------------------------------------------------- HERO
+   Video a tutto schermo, anche dietro la testata. Il testo sta sul video in basso a sinistra. */
+.hero { position: relative; height: 100vh; height: 100svh; min-height: 560px; overflow: clip; color: var(--ar-panna); background: #2b2018; }
+.hero__media { position: absolute; inset: 0; }
+.hero__media video { width: 100%; height: 115%; object-fit: cover; display: block; }
+/* Velatura: scurisce solo dove sta il testo, il resto del video resta pieno. */
+.hero__media::after { content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(30, 20, 12, .45) 0%, rgba(30, 20, 12, 0) 22%, rgba(30, 20, 12, 0) 42%, rgba(30, 20, 12, .72) 100%),
+    linear-gradient(90deg, rgba(30, 20, 12, .35) 0%, rgba(30, 20, 12, 0) 55%); }
+.hero__contenuto { position: absolute; inset: auto 0 0; z-index: 2; padding-bottom: clamp(32px, 5vh, 64px); }
+.hero__contenuto .wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 40px; }
+.hero .occhiello { color: var(--ar-sabbia); }
+.hero h1 { color: var(--ar-panna); font-size: clamp(48px, 6.4vw, 104px); line-height: .96; letter-spacing: -.03em; margin: 18px 0 26px; }
+.hero h1 em { font-style: normal; color: var(--ar-sabbia); }
+.hero__testo p { font-size: clamp(16px, 1.3vw, 19px); max-width: 44ch; margin: 0 0 30px; color: rgba(245, 235, 230, .88); }
+.hero .link { color: var(--ar-panna); } .hero .link:hover { color: var(--ar-sabbia); }
+.hero__schede { display: flex; gap: 12px; }
+.hero__scheda { display: grid; grid-template-columns: 64px auto; align-items: center; gap: 14px; text-decoration: none; color: var(--ar-panna);
+  padding: 10px 18px 10px 10px; background: rgba(245, 235, 230, .12); border: 1px solid rgba(245, 235, 230, .22);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: background .3s; }
+.hero__scheda:hover { background: rgba(245, 235, 230, .22); }
+.hero__scheda img { width: 64px; height: 64px; object-fit: cover; }
+.hero__scheda b { display: block; font: 700 11px/1.2 var(--titoli); letter-spacing: .18em; text-transform: uppercase; }
+.hero__scheda span { display: block; font-size: 13px; opacity: .8; margin-top: 4px; }
+.hero__scorri { position: absolute; z-index: 2; left: 50%; bottom: 18px; translate: -50% 0; width: 1px; height: 44px; background: rgba(245, 235, 230, .35); overflow: hidden; }
+.hero__scorri::after { content: ''; position: absolute; inset: 0; background: var(--ar-panna); animation: scorri 2.2s var(--ease) infinite; }
+@keyframes scorri { 0% { transform: translateY(-100%); } 60%, 100% { transform: translateY(100%); } }
+
+/* Testata sopra il video: trasparente e chiara, finché non si scorre. */
+.testata.su-video:not(.scrollata) nav a, .testata.su-video:not(.scrollata) .lingue a,
+.testata.su-video:not(.scrollata) .apri-menu { color: var(--ar-panna); }
+.testata .marchio .chiaro { display: none; }
+.testata.su-video:not(.scrollata) .marchio .scuro { display: none; }
+.testata.su-video:not(.scrollata) .marchio .chiaro { display: block; }
+.menu-aperto .testata .marchio .chiaro { display: none !important; } .menu-aperto .testata .marchio .scuro { display: block !important; }
+.menu-aperto .testata .apri-menu { color: var(--fg) !important; }
+
+/* ---------------------------------------------------------------- TERRITORIO */
+.territorio { padding-block: var(--s); }
+.territorio__corpo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
+.territorio__corpo h2 { font-size: clamp(34px, 4.2vw, 60px); line-height: 1.06; margin-top: 18px; letter-spacing: -.02em; }
+.territorio__corpo p + p { margin-top: 18px; }
+.numeri { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: clamp(64px, 8vw, 112px); }
+.numeri div { padding-top: 24px; border-top: 1px solid var(--linea); }
+.numeri b { display: block; font: 300 clamp(40px, 4.6vw, 68px)/1 var(--titoli); color: var(--ar-marrone); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.numeri span { display: block; margin-top: 12px; font-size: 14px; color: var(--fg-muted); }
+
+/* ------------------------------------------------------- STORIA (IL RACCONTO) */
+.storia { background: var(--ar-panna); padding-bottom: var(--s); overflow: clip; }
+.cinema { position: relative; aspect-ratio: 12 / 5; overflow: hidden; background: #1d150f; }
+.cinema img { width: 100%; height: 100%; object-fit: cover; }
+.cinema figcaption { position: absolute; left: var(--g); bottom: 20px; font-size: 12px; letter-spacing: .08em; color: rgba(245, 235, 230, .7); }
+.racconto { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(40px, 7vw, 120px); margin-top: clamp(56px, 7vw, 104px); align-items: start; }
+.racconto blockquote { margin: 0; font: 400 clamp(26px, 3vw, 44px)/1.3 var(--testo); color: var(--ar-cacao); letter-spacing: -.005em; }
+.racconto blockquote .p { display: inline; }
+.racconto cite { display: block; margin-top: 28px; font: 700 11px/1.5 var(--titoli); font-style: normal; letter-spacing: .2em; text-transform: uppercase; color: var(--fg-muted); }
+.racconto__lato h2 { font-size: clamp(28px, 2.8vw, 40px); line-height: 1.12; margin: 18px 0 20px; letter-spacing: -.015em; }
+.racconto__lato > p { margin-bottom: 28px; }
+.fotogrammi { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; margin: 40px 0 0; }
+.fotogrammi figure { margin: 0; }
+.fotogrammi .foto { aspect-ratio: 4 / 3; }
+.fotogrammi figure:first-child { grid-column: 1 / -1; }
+.fotogrammi figure:first-child .foto { aspect-ratio: 12 / 5; }
+.fotogrammi .bn img { filter: grayscale(1); }
+.fotogrammi figcaption { font-size: 12px; color: var(--fg-muted); margin-top: 8px; }
+.mani { margin: clamp(64px, 8vw, 120px) auto 0; max-width: 30ch; text-align: center; font: 400 clamp(20px, 2vw, 28px)/1.4 var(--testo); text-transform: uppercase; letter-spacing: .06em; color: var(--ar-marrone); }
+.mani::before { content: ''; display: block; width: 1px; height: 56px; background: var(--ar-arancio); margin: 0 auto 32px; }
+
+/* --------------------------------------------------- VETRINA (FORMAGGI CHE FLUTTUANO) */
+.vetrina { position: relative; min-height: 135vh; display: grid; place-items: center; overflow: clip; padding: var(--s) 0; }
+.vetrina__testo { position: relative; z-index: 2; text-align: center; max-width: 1100px; padding: 0 var(--g); }
+.vetrina h2 { font-size: clamp(44px, 6.6vw, 104px); line-height: .98; letter-spacing: -.03em; margin: 22px 0 28px; }
+.vetrina h2 em { font-style: normal; color: var(--ar-arancio); }
+.vetrina__testo p { max-width: 40ch; margin: 0 auto 36px; }
+.fluttua { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.fluttua img { position: absolute; height: auto; filter: drop-shadow(0 28px 26px rgba(86, 63, 45, .28)); will-change: transform; }
+.fluttua .sfocato { filter: blur(5px) drop-shadow(0 18px 18px rgba(86, 63, 45, .18)); opacity: .6; z-index: -1; }
+.v1 { width: 15vw; left: 4%; top: 7%; rotate: -8deg; }
+.v2 { width: 5.5vw; left: 22%; top: 3%; rotate: 14deg; }
+.v3 { width: 13vw; right: 6%; top: 6%; rotate: 9deg; }
+.v4 { width: 5.5vw; right: 25%; top: 15%; rotate: -12deg; }
+.v5 { width: 11vw; left: 10%; top: 44%; rotate: 6deg; }
+.v6 { width: 7.5vw; right: 11%; top: 40%; rotate: -6deg; }
+.v7 { width: 12vw; left: 19%; top: 74%; rotate: -4deg; }
+.v8 { width: 5.5vw; left: 4%; top: 84%; rotate: 18deg; }
+.v9 { width: 13vw; right: 17%; top: 70%; rotate: 7deg; }
+.v10 { width: 7vw; right: 4%; top: 88%; rotate: -10deg; }
+@media (max-width: 760px) {
+  .vetrina { min-height: 115vh; }
+  .v1 { width: 34vw; left: -6%; top: 3%; } .v3 { width: 30vw; right: -4%; top: 5%; }
+  .v5 { width: 24vw; left: -4%; top: 76%; } .v9 { width: 30vw; right: -6%; top: 78%; }
+  .v6 { width: 16vw; right: 30%; top: 90%; } .v2 { width: 12vw; left: 40%; top: 1%; }
+  .v4, .v7, .v8, .v10 { display: none; }
+}
+
+/* ---------------------------------------------------------------- FORMAGGI */
+.formaggi__testa { display: flex; justify-content: space-between; align-items: end; gap: 32px; flex-wrap: wrap; margin-bottom: clamp(40px, 5vw, 64px); }
+.formaggi__testa h2 { font-size: clamp(40px, 5.4vw, 80px); line-height: 1; margin-top: 18px; letter-spacing: -.025em; }
+.formaggi__testa p { max-width: 38ch; color: var(--fg-muted); }
+.schede { display: flex; gap: clamp(20px, 3vw, 44px); border-bottom: 1px solid var(--linea); margin-bottom: clamp(36px, 4vw, 56px);
+  overflow-x: auto; scrollbar-width: none; }
+.schede::-webkit-scrollbar { display: none; }
+.schede button { all: unset; cursor: pointer; white-space: nowrap; padding: 0 0 18px; position: relative;
+  font: 700 clamp(15px, 1.4vw, 19px)/1 var(--titoli); color: var(--fg-muted); transition: color .2s; }
+.schede button sup { font: 400 11px/1 var(--testo); margin-left: 4px; vertical-align: top; color: var(--ar-arancio); }
+.schede button::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--ar-marrone);
+  transform: scaleX(0); transform-origin: left; transition: transform .5s var(--ease); }
+.schede button:hover, .schede button[aria-selected='true'] { color: var(--ar-marrone); }
+.schede button[aria-selected='true']::after { transform: scaleX(1); }
+.schede button:focus-visible { outline: 2px solid var(--ar-arancio); outline-offset: 4px; }
+.categoria { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
+.categoria[hidden] { display: none; }
+.categoria__visivo { position: sticky; top: 112px; }
+.categoria__foto { aspect-ratio: 4 / 5; }
+.categoria__foto > img { position: absolute; inset: 0; }
+/* La foto prodotto è su bianco: in moltiplica il bianco sparisce nel fondo sabbia e resta l'ombra vera. */
+.categoria__prodotto { position: absolute; inset: 0; margin: 0; display: grid; place-items: center; background: var(--ar-sabbia);
+  opacity: 0; transition: opacity .45s var(--ease); pointer-events: none; }
+.categoria__prodotto img { width: 74%; height: auto; mix-blend-mode: multiply; }
+.categoria__prodotto figcaption { position: absolute; left: 24px; bottom: 20px; font: 700 11px/1 var(--titoli); letter-spacing: .2em; text-transform: uppercase; color: var(--ar-marrone); }
+.categoria__visivo.mostra-prodotto .categoria__prodotto { opacity: 1; }
+.categoria__info h3 { font-size: clamp(32px, 3.4vw, 48px); line-height: 1.05; margin-bottom: 20px; }
+.categoria__info > p { max-width: 50ch; }
+.elenco { list-style: none; margin: 40px 0 36px; padding: 0; border-top: 1px solid var(--linea); }
+.elenco li { display: grid; grid-template-columns: 1fr auto; gap: 4px 24px; align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--linea);
+  transition: padding .35s var(--ease); }
+.elenco li:hover { padding-left: 10px; }
+.elenco b { font: 700 15px/1.3 var(--titoli); letter-spacing: .12em; text-transform: uppercase; color: var(--ar-arancio); }
+.elenco b sup { font-size: 9px; font-weight: 300; margin-left: 2px; }
+.elenco span { font: 300 12px/1.3 var(--titoli); letter-spacing: .16em; text-transform: uppercase; color: var(--ar-marrone); grid-column: 1; }
+.elenco em { font: 400 13px/1.3 var(--testo); font-style: normal; color: var(--fg-muted); grid-column: 2; grid-row: 1 / span 2; align-self: center; text-align: right; }
+.elenco__miniatura { display: none; }
+
+/* -------------------------------------------------------- QUATTRO GESTI (PIN) */
+.gesti { background: var(--ar-panna); }
+.gesti__fermo { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: clamp(32px, 6vw, 96px);
+  align-items: center; padding-block: clamp(96px, 12vh, 140px) clamp(40px, 8vh, 80px); }
+.gesti__testa h2 { font-size: clamp(32px, 3.6vw, 56px); line-height: 1; margin-top: 18px; letter-spacing: -.025em; }
+.gesti__passi { position: relative; margin-top: clamp(36px, 6vh, 64px); min-height: 300px; }
+.passo { border-top: 1px solid var(--linea); padding-top: 24px; }
+.passo + .passo { margin-top: 28px; }
+.passo .num { font: 300 13px/1 var(--titoli); letter-spacing: .2em; color: var(--ar-arancio); }
+.passo h3 { font-size: clamp(24px, 2.2vw, 32px); margin: 12px 0 10px; }
+.passo p { color: var(--fg-muted); max-width: 40ch; }
+.gesti__avanzamento { display: none; height: 2px; background: var(--linea); margin-top: 36px; }
+.gesti__avanzamento i { display: block; height: 100%; width: 100%; background: var(--ar-marrone); transform-origin: left; transform: scaleX(.25); }
+.gesti__immagini { position: relative; aspect-ratio: 4 / 5; max-height: 76vh; width: 100%; justify-self: end; }
+.gesti__immagini .foto { position: absolute; inset: 0; }
+.gesti__immagini .bn img { filter: grayscale(1); }
+/* Con l'animazione attiva i passi si sovrappongono e si alternano. */
+@media (min-width: 761px) {
+  .anima .gesti__passi .passo { position: absolute; inset: 0 0 auto; margin: 0; }
+  .anima .gesti__avanzamento { display: block; }
+}
+.gesti__citazione { text-align: center; padding: clamp(80px, 10vw, 144px) var(--g) var(--s); }
+.gesti__citazione blockquote { margin: 0 auto; max-width: 24ch; font: 400 clamp(24px, 2.8vw, 40px)/1.35 var(--testo); text-transform: uppercase; letter-spacing: .06em; color: var(--ar-arancio); }
+.gesti__citazione cite { display: block; margin-top: 24px; font: 700 11px/1 var(--titoli); font-style: normal; letter-spacing: .24em; text-transform: uppercase; color: var(--fg-muted); }
+
+/* -------------------------------------------------------------- DALLA CANTINA */
+.cantina__testa { text-align: center; margin-bottom: clamp(48px, 6vw, 88px); }
+.cantina__testa h2 { font-size: clamp(36px, 4.6vw, 68px); line-height: 1.05; margin-top: 18px; letter-spacing: -.025em; }
+.evidenze { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 44px); }
+.evidenza { text-decoration: none; display: block; }
+.evidenza:nth-child(2) { margin-top: clamp(48px, 10vw, 180px); }
+.evidenza .foto { aspect-ratio: 4 / 5; }
+.evidenza .foto img { height: 118%; margin-top: -9%; }  /* margine per il parallasse interno */
+.evidenza__meta { display: grid; grid-template-columns: 1fr auto; gap: 4px 20px; margin-top: 22px; align-items: baseline; }
+.evidenza__meta b { font: 700 clamp(18px, 1.6vw, 22px)/1.2 var(--titoli); letter-spacing: .12em; text-transform: uppercase; color: var(--ar-arancio); }
+.evidenza__meta span { font: 300 12px/1.3 var(--titoli); letter-spacing: .16em; text-transform: uppercase; color: var(--ar-marrone); }
+.evidenza__meta p { grid-column: 1 / -1; color: var(--fg-muted); max-width: 46ch; margin-top: 10px; }
+
+/* ------------------------------------------------------------------ PERSONE */
+.persone { padding-bottom: var(--s); overflow: hidden; }
+.striscia { display: flex; gap: clamp(12px, 1.6vw, 24px); width: max-content; padding-inline: var(--g); }
+.striscia .foto { height: clamp(260px, 38vw, 520px); flex: none; }
+.striscia .larga { aspect-ratio: 16 / 10; } .striscia .alta { aspect-ratio: 3 / 4; }
+.persone__corpo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); margin-top: clamp(56px, 7vw, 104px); }
+.persone__corpo h2 { font-size: clamp(34px, 4.2vw, 60px); line-height: 1.06; margin-top: 18px; letter-spacing: -.02em; }
+.persone__corpo blockquote { margin: 0 0 40px; font: 400 clamp(20px, 1.8vw, 26px)/1.45 var(--testo); color: var(--ar-cacao); }
+.valori { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.valori div { border-top: 1px solid var(--linea); padding-top: 18px; }
+.valori h3 { font-size: 12px; letter-spacing: .2em; text-transform: uppercase; margin-bottom: 10px; }
+.valori h3 span { color: var(--ar-arancio); margin-right: 8px; }
+.valori p { font-size: 14px; color: var(--fg-muted); }
+
+/* ------------------------------------------------------------ SEZIONI SCURE
+   Fondo cacao, testo panna. Sul cacao l'arancio non regge il testo (2,8:1):
+   occhielli e citazioni passano a sabbia, l'arancio resta solo nei nomi grandi. */
+.scura { --fg: var(--ar-panna); --fg-muted: rgba(245, 235, 230, .68); --linea: rgba(245, 235, 230, .16);
+  background: var(--ar-cacao); color: var(--fg); }
+.scura h2, .scura h3 { color: var(--ar-panna); }
+.scura .occhiello, .scura .passo .num, .scura .valori h3 span { color: var(--ar-sabbia); }
+.scura .link { color: var(--ar-panna); } .scura .link:hover { color: var(--ar-sabbia); }
+.scura .foto { background: #4a3626; }
+.scura .gesti__avanzamento i { background: var(--ar-sabbia); }
+.scura .gesti__citazione blockquote { color: var(--ar-sabbia); }
+.scura .persone__corpo blockquote { color: var(--ar-panna); }
+.persone.scura { padding-top: var(--s); }
+
+/* ---------------------------------------------------------------- DOVE */
+.dove { background: var(--ar-panna); }
+.dove__griglia { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
+.dove h2 { font-size: clamp(34px, 4.2vw, 60px); line-height: 1.06; margin: 18px 0 28px; letter-spacing: -.02em; }
+.dove .foto { aspect-ratio: 4 / 3; margin-top: 40px; }
+.dove .foto img { height: 116%; margin-top: -8%; }
+.luoghi { display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(24px, 3vw, 48px); }
+.luogo { border-top: 1px solid var(--linea); padding: 24px 0 36px; }
+.luogo h3 { font-size: 13px; letter-spacing: .2em; text-transform: uppercase; margin-bottom: 14px; }
+.luogo p { font-size: 15px; line-height: 1.7; }
+.luogo .orari { color: var(--fg-muted); margin-top: 8px; }
+.luogo a { text-decoration: none; border-bottom: 1px solid var(--linea); }
+.luogo a:hover { color: var(--ar-arancio); border-color: currentColor; }
+
+/* ---------------------------------------------------------- NEWSLETTER + PIEDE */
+.newsletter { text-align: center; }
+.newsletter h2 { font-size: clamp(30px, 3.2vw, 46px); margin: 18px 0 14px; letter-spacing: -.015em; }
+.newsletter p { color: var(--fg-muted); }
+.newsletter form { display: flex; max-width: 520px; margin: 36px auto 0; border-bottom: 1px solid var(--ar-cacao); }
+.newsletter input { flex: 1; min-width: 0; border: 0; background: none; font: 17px var(--testo); color: var(--fg); padding: 14px 0; }
+.newsletter input::placeholder { color: var(--fg-muted); }
+.newsletter input:focus { outline: none; }
+.newsletter button { border: 0; background: none; cursor: pointer; font: 700 12px/1 var(--titoli); letter-spacing: .2em; text-transform: uppercase; color: var(--ar-marrone); padding: 0 0 0 16px; }
+.newsletter button:hover { color: var(--ar-arancio); }
+.piede { background: var(--ar-cacao); color: var(--ar-panna); padding: clamp(64px, 8vw, 112px) 0 32px; }
+.piede__griglia { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 40px; }
+.piede__marchio img { width: 160px; }
+.piede__marchio p { margin-top: 24px; font-size: 14px; color: rgba(245, 235, 230, .7); max-width: 28ch; }
+.piede h4 { font: 700 11px/1 var(--titoli); letter-spacing: .24em; text-transform: uppercase; color: var(--ar-sabbia); margin: 0 0 20px; opacity: .75; }
+.piede ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 15px; }
+.piede a { text-decoration: none; color: var(--ar-panna); opacity: .9; } .piede a:hover { opacity: 1; color: #E9A77A; }
+.piede__fine { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: clamp(56px, 7vw, 96px); padding-top: 24px;
+  border-top: 1px solid rgba(245, 235, 230, .16); font-size: 12px; color: rgba(245, 235, 230, .6); }
+
+/* =============================================================== TABLET */
+@media (max-width: 1080px) {
+  .testata nav, .lingue { display: none; }
+  .apri-menu { display: block; }
+  .testata .wrap { grid-template-columns: 44px 1fr 44px; height: 100px; }
+  .testata.scrollata .wrap { height: 80px; }
+  .testata .marchio { justify-self: center; } .testata .marchio img { width: 84px; height: 84px; } .testata.scrollata .marchio img { width: 64px; height: 64px; }
+  .testata .destra { display: none; }
+  /* hamburger a destra, marchio al centro */
+  .testata .apri-menu { grid-column: 3; grid-row: 1; justify-self: end; margin: 0 -10px 0 0; }
+  .testata .marchio { grid-column: 2; grid-row: 1; }
+  .menu-mobile { position: fixed; inset: 80px 0 0; z-index: 29; background: var(--bg); padding: 40px var(--g);
+    display: flex; flex-direction: column; gap: 4px; opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s; }
+  .menu-aperto .menu-mobile { opacity: 1; visibility: visible; }
+  .menu-aperto .testata { background: var(--bg); transform: none; }
+  .menu-mobile a { font: 700 30px/1.2 var(--titoli); color: var(--ar-marrone); text-decoration: none; padding: 14px 0; border-bottom: 1px solid var(--linea); }
+  .menu-mobile .lingue-m { display: flex; gap: 20px; margin-top: 28px; font: 700 12px/1 var(--titoli); letter-spacing: .2em; }
+  .menu-mobile .lingue-m a { font: inherit; border: 0; padding: 0; color: var(--fg-muted); } .menu-mobile .lingue-m a[aria-current] { color: var(--ar-marrone); }
+  .menu-aperto .apri-menu span:first-child { transform: translateY(3.75px) rotate(45deg); }
+  .menu-aperto .apri-menu span:last-child { transform: translateY(-3.75px) rotate(-45deg); }
+  .piede__griglia { grid-template-columns: 1fr 1fr; }
+  .piede__marchio { grid-column: 1 / -1; }
+  .valori { grid-template-columns: 1fr; }
+}
+
+/* =============================================================== MOBILE */
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  .hero__contenuto .wrap { grid-template-columns: 1fr; }
+  .hero__schede { display: none; }
+  .hero h1 { font-size: 46px; }
+  .hero__scorri { display: none; }
+  .territorio__corpo, .persone__corpo, .dove__griglia { grid-template-columns: 1fr; gap: 24px; }
+  .numeri { grid-template-columns: 1fr; row-gap: 8px; }
+
+  .cinema { aspect-ratio: 4 / 3; }
+  .cinema img { object-position: 40% 50%; }
+  .racconto { grid-template-columns: 1fr; gap: 48px; }
+
+  .categoria { grid-template-columns: 1fr; gap: 28px; }
+  .categoria__visivo { position: static; }
+  .categoria__foto { aspect-ratio: 4 / 3; margin-inline: calc(var(--g) * -1); }
+  .schede { margin-inline: calc(var(--g) * -1); padding-inline: var(--g); }
+  .elenco li { grid-template-columns: 64px 1fr auto; gap: 2px 16px; }
+  .elenco li:hover { padding-left: 0; }
+  .elenco__miniatura { display: block; grid-row: 1 / span 2; width: 64px; height: 64px; background: var(--ar-sabbia); }
+  .elenco__miniatura img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; }
+  .elenco b, .elenco span { grid-column: 2; } .elenco em { grid-column: 3; }
+  .elenco b { font-size: 14px; } .elenco span { font-size: 11px; }
+
+  /* Su mobile la sezione bloccata mette l'immagine sopra e il passo sotto. */
+  .gesti__fermo { grid-template-columns: 1fr; gap: 24px; align-content: start; padding-top: 96px; }
+  .gesti__immagini { order: -1; aspect-ratio: auto; height: 46vh; max-height: none; margin-inline: calc(var(--g) * -1); width: auto; justify-self: stretch; }
+  .gesti__testa h2 { font-size: 32px; margin-top: 12px; }
+  .gesti__passi { margin-top: 20px; min-height: 0; }
+  .gesti__immagini .foto + .foto { display: none; }
+  .gesti__fermo { min-height: 0; padding-bottom: 0; }
+  .passo h3 { margin-top: 8px; }
+
+  .evidenze { grid-template-columns: 1fr; gap: 56px; }
+  .evidenza:nth-child(2) { margin-top: 0; }
+  .luoghi { grid-template-columns: 1fr; }
+  .dove .foto { margin-inline: calc(var(--g) * -1); }
+  .piede__griglia { grid-template-columns: 1fr; gap: 36px; }
+}
+
+/* Telefono: etichette e link piccoli non sotto i 12px, aree di tocco più comode. */
+@media (max-width: 760px) {
+  .occhiello, .link, .hero__scheda b, .piede h4, .valori h3, .elenco span, .scopri, .prodotto__dati dt, .gesti__citazione cite, .citazione cite, .racconto cite { font-size: 12px; }
+  .link { padding-block: 10px 8px; }
+  .piede ul { gap: 4px; } .piede ul a { display: inline-block; padding: 6px 0; }
+  .lingue-m a { padding: 8px 0 !important; }
+  .evidenza__meta { grid-template-columns: 1fr; }
+  .evidenza__meta span { margin-top: 4px; }
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+</style>
+<style>
+/* Pagine interne: hero con foto al posto del video, blocchi foto+testo, schede. */
+.hero--pagina { height: 78vh; height: 78svh; }
+.hero__media img { width: 100%; height: 115%; object-fit: cover; }
+.hero__media .bn { filter: grayscale(1); }
+.testata nav a[aria-current] { opacity: 1; color: var(--ar-arancio); }
+.testata.su-video:not(.scrollata) nav a[aria-current] { color: var(--ar-sabbia); }
+.blocco { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: center; }
+.blocco + .blocco { margin-top: var(--s); }
+.blocco--inverso .blocco__foto { order: 2; }
+.blocco__foto { aspect-ratio: 4 / 5; }
+.blocco__foto.bn img { filter: grayscale(1); }
+.blocco h2 { font-size: clamp(30px, 3.4vw, 50px); line-height: 1.08; margin: 18px 0 24px; letter-spacing: -.02em; }
+.blocco p { max-width: 54ch; }
+.blocco p + p { margin-top: 18px; }
+.larga-foto { aspect-ratio: 12 / 5; }
+.pagina-testa { max-width: 900px; }
+.pagina-testa h2 { font-size: clamp(32px, 3.8vw, 56px); line-height: 1.08; margin-top: 18px; letter-spacing: -.02em; }
+.pagina-testa p { margin-top: 24px; font-size: clamp(18px, 1.5vw, 21px); }
+.schede-g { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 clamp(24px, 3vw, 48px); margin-top: clamp(48px, 6vw, 88px); }
+.scheda-g { border-top: 1px solid var(--linea); padding: 24px 0 48px; }
+.scheda-g .num { font: 300 13px/1 var(--titoli); letter-spacing: .2em; color: var(--ar-arancio); }
+.scheda-g h3 { font-size: clamp(20px, 1.8vw, 26px); line-height: 1.15; margin: 14px 0 12px; }
+.scheda-g p { color: var(--fg-muted); font-size: 16px; }
+.scura .scheda-g .num { color: var(--ar-sabbia); }
+.racconto-sardegna { max-width: 760px; margin: 0 auto; }
+.racconto-sardegna h2 { font-size: clamp(30px, 3.4vw, 50px); line-height: 1.1; letter-spacing: -.02em; margin: 18px 0 32px; }
+.racconto-sardegna p + p { margin-top: 18px; }
+.scopri { font: 700 11px/1 var(--titoli); letter-spacing: .16em; text-transform: uppercase; color: var(--ar-arancio); text-decoration: none; border-bottom: 1px solid currentColor; }
+.scopri:hover { color: var(--ar-marrone); }
+.citazione { text-align: center; padding-block: var(--s); }
+.citazione blockquote { margin: 0 auto; max-width: 26ch; font: 400 clamp(24px, 2.8vw, 40px)/1.35 var(--testo); text-transform: uppercase; letter-spacing: .06em; color: var(--ar-sabbia); }
+.citazione cite { display: block; margin-top: 28px; font: 700 11px/1.6 var(--titoli); font-style: normal; letter-spacing: .24em; text-transform: uppercase; color: var(--fg-muted); }
+.spot { aspect-ratio: 16 / 9; background: #1d150f; margin-top: clamp(40px, 5vw, 64px); }
+.spot iframe { width: 100%; height: 100%; border: 0; display: block; }
+.valori--pagina { margin-top: clamp(40px, 5vw, 64px); }
+.valori--pagina p { font-size: 16px; }
+.valori--pagina a { color: var(--ar-sabbia); }
+@media (max-width: 1080px) { .schede-g { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 760px) {
+  .hero--pagina { height: 70svh; }
+  .blocco { grid-template-columns: 1fr; gap: 28px; }
+  .blocco--inverso .blocco__foto { order: 0; }
+  .blocco__foto { aspect-ratio: 4 / 3; margin-inline: calc(var(--g) * -1); }
+  .larga-foto { aspect-ratio: 4 / 3; }
+  .schede-g { grid-template-columns: 1fr; }
+}
+</style>
+<style>
+/* Pagina Formaggi: una scheda per ogni prodotto. */
+.cat-intro { max-width: 62ch; margin-bottom: clamp(40px, 5vw, 64px); }
+.cat-intro h3 { font-size: clamp(32px, 3.4vw, 48px); line-height: 1.05; margin-bottom: 20px; }
+.prodotto { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: clamp(32px, 6vw, 96px);
+  padding: clamp(40px, 6vw, 88px) 0; border-top: 1px solid var(--linea); align-items: start; }
+.prodotto:last-of-type { border-bottom: 1px solid var(--linea); }
+.prodotto__foto { grid-row: 1 / span 2; background: var(--ar-sabbia); display: grid; place-items: center; overflow: hidden; }
+.prodotto__foto:has(.sigillo) { aspect-ratio: 5 / 4; }
+.prodotto:nth-of-type(even) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+.prodotto:nth-of-type(even) .prodotto__foto { grid-column: 2; }
+.prodotto:nth-of-type(even) .prodotto__testo, .prodotto:nth-of-type(even) .prodotto__dati { grid-column: 1; }
+.prodotto__foto img { width: 100%; height: auto; mix-blend-mode: multiply; transition: transform 1.2s var(--ease); }
+.prodotto:hover .prodotto__foto img:not(.sigillo) { transform: scale(1.04); }
+.prodotto__foto .sigillo { width: 30%; height: auto; opacity: .35; mix-blend-mode: normal; object-fit: contain; }
+.prodotto h4 { font: 700 clamp(26px, 2.8vw, 40px)/1.08 var(--titoli); letter-spacing: .08em; text-transform: uppercase; color: var(--ar-arancio); margin: 0; }
+.prodotto h4 sup { font-size: .4em; font-weight: 300; margin-left: 2px; vertical-align: top; }
+.prodotto__sotto { display: block; margin-top: 12px; font: 300 13px/1.4 var(--titoli); letter-spacing: .18em; text-transform: uppercase; color: var(--ar-marrone); }
+.prodotto__testo { align-self: end; }
+.prodotto__testo > p { margin-top: 22px; font-size: 18px; }
+.prodotto__dati { font-size: 15px; margin: 32px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 0 32px; }
+.prodotto__dati dt { font: 700 11px/1.4 var(--titoli); letter-spacing: .2em; text-transform: uppercase; color: var(--fg-muted); padding-top: 9px; }
+.prodotto__dati dd { margin: 0 0 16px; }
+.prodotto__dati ul { list-style: none; margin: 0; padding: 0; }
+.prodotto__dati li { padding: 7px 0; border-bottom: 1px solid var(--linea); }
+.prodotto__dati dd:not(:has(ul)) { padding: 7px 0; border-bottom: 1px solid var(--linea); }
+.nota-prodotti { margin-top: clamp(40px, 5vw, 64px); font-size: 13px; color: var(--fg-muted); max-width: 80ch; }
+.nota-prodotti p + p { margin-top: 8px; }
+@media (max-width: 760px) {
+  .prodotto, .prodotto:nth-of-type(even) { grid-template-columns: 1fr; grid-template-rows: none; padding: 40px 0; }
+  .prodotto__foto, .prodotto:nth-of-type(even) .prodotto__foto { grid-row: auto; grid-column: auto; margin: 0 calc(var(--g) * -1) 24px; }
+  .prodotto:nth-of-type(even) .prodotto__testo, .prodotto:nth-of-type(even) .prodotto__dati { grid-column: auto; }
+  .prodotto__testo > p { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="testata su-video" id="testata">
+  <div class="wrap">
+    <button class="apri-menu" type="button" aria-label="Apri il menu" aria-expanded="false" aria-controls="menu-mobile"><span></span><span></span></button>
+    <nav aria-label="Principale">
+      <a href="index.html">Home</a>
+      <a href="azienda.html">Azienda</a>
+      <a href="formaggi.html" aria-current="page">Formaggi</a>
+      <a href="territorio.html">Territorio</a>
+    </nav>
+    <a class="marchio" href="index.html" aria-label="Formaggi Aresu, home"><img class="scuro" src="img/sigillo-linea-marrone.svg" alt="Formaggi Aresu 1938" width="116" height="116"><img class="chiaro" src="img/sigillo-linea-panna.svg" alt="" width="116" height="116"></a>
+    <div class="destra">
+      <nav aria-label="Servizio"><a href="cheesebar.html">Cheese bar</a><a href="index.html#dove">Contatti</a></nav>
+      <div class="lingue"><a href="#" aria-current="true">IT</a><a href="#">EN</a><a href="#">DE</a></div>
+    </div>
+  </div>
+</header>
+<div class="menu-mobile" id="menu-mobile">
+  <a href="index.html">Home</a><a href="azienda.html">Azienda</a><a href="formaggi.html" aria-current="page">Formaggi</a><a href="territorio.html">Territorio</a><a href="cheesebar.html">Cheese bar</a><a href="index.html#dove">Contatti</a>
+  <div class="lingue-m"><a href="#" aria-current="true">IT</a><a href="#">EN</a><a href="#">DE</a></div>
+</div>
+
+<main id="top">
+  <section class="hero hero--pagina">
+    <div class="hero__media"><img src="img/formaggi-hero.jpg" alt="Un casaro controlla una forma tra le scaffalature di stagionatura" style="object-position:30% 50%"></div>
+    <div class="hero__contenuto">
+      <div class="wrap">
+        <div class="hero__testo">
+          <div class="occhiello" data-entra>Formaggi</div>
+          <h1 data-righe><span class="riga"><span>I nostri</span></span><span class="riga"><span><em>formaggi</em></span></span></h1>
+          <p data-entra>Vengono prodotte circa 40 diverse referenze, dai pecorini DOP, ai formaggi caprini; ricotte fresche e stagionate, e tante altre specialità casearie sarde.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sezione" id="formaggi">
+    <div class="wrap">
+      <div class="formaggi__testa">
+        <div><div class="occhiello" data-entra>Prodotti tradizionali sardi</div><h2 data-righe><span class="riga"><span>Una vasta gamma di prodotti</span></span></h2></div>
+      </div>
+      <div class="schede" role="tablist" aria-label="Categorie di formaggi">
+        <button role="tab" id="t-pecorino" aria-controls="c-pecorino" aria-selected="true">Pecorino<sup>9</sup></button>
+        <button role="tab" id="t-caprino" aria-controls="c-caprino" aria-selected="false" tabindex="-1">Caprino<sup>4</sup></button>
+        <button role="tab" id="t-misti" aria-controls="c-misti" aria-selected="false" tabindex="-1">Formaggi misti<sup>4</sup></button>
+        <button role="tab" id="t-ricotta" aria-controls="c-ricotta" aria-selected="false" tabindex="-1">Ricotta<sup>2</sup></button>
+        <button role="tab" id="t-specialita" aria-controls="c-specialita" aria-selected="false" tabindex="-1">Specialità<sup>8</sup></button>
+      </div>
+      <div role="tabpanel" id="c-pecorino" aria-labelledby="t-pecorino">
+        <div class="cat-intro"><h3>Pecorino</h3><p>Dai freschissimi agli stagionati, il nostro assortimento di pecorini copre tutte le esigenze commerciali, garantendo alto valore aggiunto in ogni fascia. I nostri classici stagionati non subiscono trattamenti con conservanti in crosta. La stagionatura a crosta naturale, fatta come da tradizione, alla vecchia maniera, è una nostra grande peculiarità.</p></div>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img class="sigillo" src="img/sigillo-linea-marrone.svg" alt=""></div>
+            <div class="prodotto__testo"><h4>Pecorino primo sale</h4><span class="prodotto__sotto">Pecorino primo sale</span><p>Pecorino tradizionale italiano, senza stagionatura, solo tutto il gusto del formaggio appena prodotto. Ottimo con verdure fresche e insalate.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>Senza stagionatura</dd><dt>Formati</dt><dd><ul><li><span>Forma – 2 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-ricercata.jpg" alt="Ricercata" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Ricercata<sup>®</sup></h4><span class="prodotto__sotto">Pecorino dolce</span><p>Pecorino dolce a pasta molle, maturazione 20-30 giorni. Crosta liscia e sottile di colore bianco. Pasta bianca, morbida, compatta. Consumo ideale da tavola.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>20–30 giorni</dd><dt>Formati</dt><dd><ul><li><span>1/4 – 500 gr</span></li><li><span>Forma – 2 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-originale.jpg" alt="Originale®" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Originale<sup>®</sup></h4><span class="prodotto__sotto">Pecorino fresco</span><p>Pecorino fresco, maturazione 20-30 giorni. Disponibile in tre formati differenti per ogni esigenza commerciale. Pasta elastica, ideale da arrosto, per esaltarne le caratteristiche organolettiche.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>20–30 giorni</dd><dt>Formati</dt><dd><ul><li><span>1/8 – 400 gr</span></li><li><span>Forma dm 10 – 700 gr</span></li><li><span>Forma dm 16 – 1,2 kg</span></li><li><span>Forma dm 22 – 3,4 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-risveglio.jpg" alt="Risveglio®" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Risveglio<sup>®</sup></h4><span class="prodotto__sotto">Pecorino semistagionato</span><p>Pecorino da tavola, a crosta naturale. Stagionatura di 3 mesi garantiti. Pastoso, con un aroma completo. Ideale come antipasto.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>3 mesi</dd><dt>Formati</dt><dd><ul><li><span>1/8 – 350 g</span></li><li><span>Forma dm 20 – 2,7 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-la-goccia.jpg" alt="La Goccia®" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>La Goccia<sup>®</sup></h4><span class="prodotto__sotto">Pecorino stagionato classico</span><p>Pecorino stagionato classico, con una maturazione di minimo 7 mesi, si posiziona tra le migliori marche italiane del segmento. Pasta compatta, gusto deciso ma equilibrato. Si presta alla grattugia.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>Minimo 7 mesi</dd><dt>Formati</dt><dd><ul><li><span>1/8 – 350 g</span></li><li><span>Forma dm 20 – 2,4 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-nobile.jpg" alt="Nobile" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Nobile<sup>®</sup></h4><span class="prodotto__sotto">Pecorino stagionato superiore</span><p>Lavorazione tradizionale sarda per un pecorino stagionato superiore, prodotto con il caglio in pasta di agnello sardo. Stagionatura 7 mesi. Pasta compatta, friabile. Gusto superiore, con accenni di piccante.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>7 mesi</dd><dt>Formati</dt><dd><ul><li><span>1/4 – 600 g</span></li><li><span>Forma – 2,4 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-arrocca.jpg" alt="Arrocca" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Arrocca<sup>®</sup></h4><span class="prodotto__sotto">Pecorino stravecchio riserva</span><p>L’eccellenza, selezionata solo dalla famiglia Aresu viene accompagnata ad una maturazione che può arrivare anche ai 3 anni. In questo lungo periodo, il pecorino Arrocca® si migliora, portando il gusto al confine della perfezione.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>Fino a 3 anni</dd><dt>Formati</dt><dd><ul><li><span>1/4 – 700 gr</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img class="sigillo" src="img/sigillo-linea-marrone.svg" alt=""></div>
+            <div class="prodotto__testo"><h4>Brunu</h4><span class="prodotto__sotto">Pecorino</span><p>Pecorino da tavola, dal colore accattivante e dai formati tradizionali italiani. Stagionatura 30-40 giorni. Pasta media, ottimo da antipasto.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>30–40 giorni</dd><dt>Formati</dt><dd><ul><li><span>Forma – 1,8 kg</span></li><li><span>Forma – 2,8 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-romano-dop.jpg" alt="Pecorino Romano DOP" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Pecorino Romano DOP</h4><span class="prodotto__sotto">Pecorino semistagionato</span><p>Come vuole la tradizione italiana, disciplinato dalla DOP, questo prodotto si distingue per le ottime performance da grattugia. Disponibile in diversi formati per ogni esigenza commerciale.</p></div>
+            <dl class="prodotto__dati"><dt>Formati</dt><dd><ul><li><span>1/48 – 350 gr</span></li><li><span>1/8 – 3 kg</span></li></ul></dd></dl>
+          </article>
+      </div>
+      <div role="tabpanel" id="c-caprino" aria-labelledby="t-caprino" hidden>
+        <div class="cat-intro"><h3>Caprino</h3><p>Un prodotto in cui crediamo da più di 50 anni, ancor prima che le caratteristiche nutrizionali dei formaggi caprini fossero conosciute e valorizzate. Conosciamo le montagne da cui proviene la materia prima, ne valorizziamo le caratteristiche nutrizionali, creando un formaggio di qualità superiore.</p></div>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-ideale.jpg" alt="Ideale®" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Ideale<sup>®</sup></h4><span class="prodotto__sotto">Caprino fresco</span><p>Caprino fresco, con 30 giorni di maturazione. Pasta bianca ed elastica, dal gusto delicato e leggero. Ottimo in cucina.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>30 giorni</dd><dt>Formati</dt><dd><ul><li><span>1/8 – 350 gr</span></li><li><span>Forma dm 10 – 700 gr</span></li><li><span>Forma dm 16 – 1,0 kg</span></li><li><span>Forma dm 20 – 2,8 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-aresti.jpg" alt="Aresti®" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Aresti<sup>®</sup></h4><span class="prodotto__sotto">Caprino semistagionato</span><p>Caprino da tavola. Stagionatura di 3 mesi. Crosta naturale, consistenza friabile, gusto equilibrato e ricco di note aromatiche.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>3 mesi</dd><dt>Formati</dt><dd><ul><li><span>1/8 – 300 gr</span></li><li><span>Forma dm 20 – 2,6 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-selvaggio.jpg" alt="Selvaggio®" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Selvaggio<sup>®</sup></h4><span class="prodotto__sotto">Caprino stagionato</span><p>Caprino stagionato classico. Matura per almeno 7 mesi nei nostri locali, sviluppando un aroma unico, completo e stabile.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>Almeno 7 mesi</dd><dt>Formati</dt><dd><ul><li><span>1/8 – 250 g</span></li><li><span>Forma dm 20 – 2,4 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img class="sigillo" src="img/sigillo-linea-marrone.svg" alt=""></div>
+            <div class="prodotto__testo"><h4>Grancapresu<sup>®</sup></h4><span class="prodotto__sotto">Caprino stagionato superiore</span><p>Caprino stagionato superiore a lunga maturazione. Stagionato almeno 12 mesi, sviluppa un aroma intenso. Note armoniose della macchia mediterranea. Ideale in qualsiasi momento del pasto.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>Almeno 12 mesi</dd><dt>Formati</dt><dd><ul><li><span>Forma – 6 kg</span></li></ul></dd></dl>
+          </article>
+      </div>
+      <div role="tabpanel" id="c-misti" aria-labelledby="t-misti" hidden>
+        <div class="cat-intro"><h3>Formaggi misti</h3><p>Le note dolci del latte fresco di mucca locale si uniscono al sapore del latte di pecora. I prodotti stagionano su assi di legno massello, che imprimono una firma indelebile su ogni forma. In questa categoria, spicca il Granaresu, top di gamma, ormai un riferimento nel mercato nazionale ed internazionale.</p></div>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-trifoglio.jpg" alt="Trifoglio®" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Trifoglio<sup>®</sup></h4><span class="prodotto__sotto">Formaggio misto vaccino – ovino</span><p>Formaggio molle, stagionatura 20-30 gg. Pasta elastica ed adesiva. Gusto dolce. Disponibile in diversi formati, ideale in cucina ed arrosto.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>20–30 giorni</dd><dt>Formati</dt><dd><ul><li><span>1/8 – 350 gr</span></li><li><span>Forma intera – 3,4 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img class="sigillo" src="img/sigillo-linea-marrone.svg" alt=""></div>
+            <div class="prodotto__testo"><h4>Formaggio primo sale</h4><span class="prodotto__sotto">Primo sale misto</span><p>Formaggio tradizionale italiano, senza stagionatura. Gusto dolce, profumo delicato. Ideale accompagnato da verdure e fresche insalate.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>Senza stagionatura</dd><dt>Formati</dt><dd><ul><li><span>Forma – 2 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-montesu.jpg" alt="Montesu®" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Montesu<sup>®</sup></h4><span class="prodotto__sotto">Formaggio da tavola misto vaccino – ovino</span><p>Formaggio da tavola stagionato tre mesi. Pasta grassa, adesiva, che abbina il dolce del latte di mucca, al gusto unico del latte di pecora.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>3 mesi</dd><dt>Formati</dt><dd><ul><li><span>1/8 – 350 gr</span></li><li><span>Forma intera – 3,4 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-granaresu.jpg" alt="Granaresu®" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Granaresu<sup>®</sup></h4><span class="prodotto__sotto">Formaggio misto superiore a lunga maturazione</span><p>Superiore a lunga maturazione, stagionato almeno 12 mesi. Dolce al palato con un sapore deciso e persistente. Ricorda aromi di latte fresco e fieno appena tagliato. Pasta granulosa, friabile, compatta. Valido per ogni momento del pasto o come contorno.</p></div>
+            <dl class="prodotto__dati"><dt>Stagionatura</dt><dd>Almeno 12 mesi</dd><dt>Formati</dt><dd><ul><li><span>Forma – 6 kg</span></li></ul></dd></dl>
+          </article>
+      </div>
+      <div role="tabpanel" id="c-ricotta" aria-labelledby="t-ricotta" hidden>
+        <div class="cat-intro"><h3>Ricotta</h3><p>La ricotta fatta alla vecchia maniera: fuoco e sale marino di Sardegna. Nessun additivo, né panna o grassi, solo sapienza e mani esperte. Garantiamo a tutta l’ampia gamma, dalle fresche alle stagionate, un valore ed un gusto inconfondibile e tradizionale.</p></div>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-ricordo.jpg" alt="Ricordo®" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Ricordo<sup>®</sup></h4><span class="prodotto__sotto">Ricotta pecorina stagionata</span><p>Ricotta pecorina stagionata, lavorata esclusivamente a mano con sale marino locale. Disponibile per consumo da tavola, e nei piccoli formati da grattugia e al peperoncino biologico.</p></div>
+            <dl class="prodotto__dati"><dt>Formati</dt><dd><ul><li><span>Cono – 400 gr</span></li><li><span>Cono peperoncino biologico – 400 gr</span></li><li><span>1/2 – 0,9 kg</span></li><li><span>Forma classica – 1,8 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-selvaggia.jpg" alt="Selvaggia" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Selvaggia<sup>®</sup></h4><span class="prodotto__sotto">Ricotta caprina stagionata</span><p>Ricotta caprina stagionata. Sempre più apprezzata per la sua leggerezza, abbina un gusto delicato alla duttilità di utilizzo.</p></div>
+            <dl class="prodotto__dati"><dt>Formati</dt><dd><ul><li><span>1/2 – 0,9 kg</span></li><li><span>Forma – 1,8 kg</span></li></ul></dd></dl>
+          </article>
+      </div>
+      <div role="tabpanel" id="c-specialita" aria-labelledby="t-specialita" hidden>
+        <div class="cat-intro"><h3>Specialità</h3><p>In Sardegna il mondo dei formaggi è un vero e proprio universo. Fin dall’era nuragica le popolazioni locali trasformavano il fresco latte in tanti modi e varianti. La famiglia Aresu aggiorna costantemente la gamma con delizie innovative legate alla tradizione casearia sarda: creme spalmabili, grattugiati e formaggi freschi aromatizzati.</p></div>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-rustico.jpg" alt="Rustico Aresu" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Rustico Aresu<sup>®</sup></h4><span class="prodotto__sotto">Crema di pecorino</span><p>Crema di pecorino, dalla consistenza rugosa, nel formato unico e caratteristico. Gusto molto intenso dovuto alla selezione di solo formaggi stagionati che non vengono rielaborati così da tenere intatto il gusto deciso dei formaggi maturi.</p></div>
+            <dl class="prodotto__dati"><dt>Formati</dt><dd><ul><li><span>Forma classica – 450 gr</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-stuzzicante.jpg" alt="Stuzzicante" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Stuzzicante<sup>®</sup></h4><span class="prodotto__sotto">Crema di formaggi</span><p>Crema di formaggi, disponibile in tante varianti, anche personalizzate, per le moderne esigenze della ristorazione. Pratico e gusto stuzzicante.</p></div>
+            <dl class="prodotto__dati"><dt>Formati</dt><dd><ul><li><span>Classico – 200 gr</span></li><li><span>Piccante – 200 gr</span></li><li><span>Peperoncino – 200 gr</span></li><li><span>Caprino – 200 gr</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-mix-grattugiato.jpg" alt="Mix grattugiato" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Mix grattugiato<sup>®</sup></h4><span class="prodotto__sotto">Mix di formaggi &amp; ricotte Aresu</span><p>Il mix di formaggi e ricotte rende questo mix di grattugiati ideale per ogni preparazione o condimento.</p></div>
+            <dl class="prodotto__dati"><dt>Formati</dt><dd><ul><li><span>Bustina – 100 gr</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img class="sigillo" src="img/sigillo-linea-marrone.svg" alt=""></div>
+            <div class="prodotto__testo"><h4>Erborinau<sup>®</sup></h4><span class="prodotto__sotto">Formaggio erborinato</span><p>Formaggio erborinato “crosta lavata”, dal grande carattere. Pasta grassa e burrosa. Affinato nei nostri locali, sotto sapienti cure, capaci di esaltare le caratteristiche del fresco latte sardo.</p></div>
+            <dl class="prodotto__dati"><dt>Formati</dt><dd><ul><li><span>Forma – 7 kg</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-pepe-nero.jpg" alt="Pepe nero" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Pepe nero</h4><span class="prodotto__sotto">Formaggio speziato al pepe nero</span><p>Pecorino e pepe nero: storico abbinamento che lega la Sardegna alle regioni meridionali dell’Italia. È qui che questo connubio viene maggiormente apprezzato.</p></div>
+            <dl class="prodotto__dati"><dt>Formati</dt><dd><ul><li><span>1/8 – 350 gr</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-erba-cipollina.jpg" alt="Erba cipollina" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Erba cipollina</h4><span class="prodotto__sotto">Formaggio speziato all’erba cipollina</span><p>Provalo arrosto, quando il dolce del formaggio si abbina al gusto sobrio dell’erba cipollina.</p></div>
+            <dl class="prodotto__dati"><dt>Formati</dt><dd><ul><li><span>1/8 – 350 gr</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img src="img/p-peperoncino-bio.jpg" alt="Peperoncino bio" loading="lazy"></div>
+            <div class="prodotto__testo"><h4>Peperoncino bio</h4><span class="prodotto__sotto">Formaggio speziato al peperoncino BIO</span><p>Formaggio speziato al peperoncino biologico. Prodotto in Sardegna.</p></div>
+            <dl class="prodotto__dati"><dt>Formati</dt><dd><ul><li><span>1/8 – 350 gr</span></li></ul></dd></dl>
+          </article>
+          <article class="prodotto" data-entra>
+            <div class="prodotto__foto"><img class="sigillo" src="img/sigillo-linea-marrone.svg" alt=""></div>
+            <div class="prodotto__testo"><h4>Rotolino Aresu<sup>®</sup></h4><span class="prodotto__sotto">Formaggio molle</span><p>Una gamma di formaggini freschi arricchiti con spezie e gusti della tradizione mediterranea: la novità Formaggi Aresu del 2020. Formato pratico da 200gr a peso variabile, ideale per libero servizio e gastronomia take away.</p></div>
+            <dl class="prodotto__dati"><dt>Formati</dt><dd><ul><li><span>Aglio, erba cipollina, timo, peperoncino, affumicato, caprino, tartufo nero – 200 gr</span></li></ul></dd></dl>
+          </article>
+      </div>
+      <div class="nota-prodotti">
+        <p>Prodotti venduti al pezzo, peso indicativo.</p>
+        <p>Le foto dei prodotti e delle etichette possono subire variazioni in base alla stagionalità del prodotto o alle modifiche legislative da apportare sulle etichette. Richiedete direttamente qualsiasi informazione all’indirizzo mail: <a href="mailto:info@formaggiaresu.com">info@formaggiaresu.com</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="piede">
+  <div class="wrap">
+    <div class="piede__griglia">
+      <div class="piede__marchio"><img src="img/sigillo-linea-panna.svg" alt="Formaggi Aresu 1938"><p>È buono, è sardo, è Aresu.</p></div>
+      <div><h4>Formaggi</h4><ul><li><a href="formaggi.html#pecorino">Pecorino</a></li><li><a href="formaggi.html#caprino">Caprino</a></li><li><a href="formaggi.html#misti">Formaggi misti</a></li><li><a href="formaggi.html#ricotta">Ricotta</a></li><li><a href="formaggi.html#specialita">Specialità</a></li></ul></div>
+      <div><h4>Azienda</h4><ul><li><a href="azienda.html">Azienda</a></li><li><a href="territorio.html">Territorio</a></li><li><a href="cheesebar.html">Cheese bar</a></li><li><a href="index.html#dove">Contatti</a></li></ul></div>
+      <div><h4>Seguici</h4><ul><li><a href="#">Instagram</a></li><li><a href="#">Facebook</a></li><li><a href="#">YouTube</a></li></ul></div>
+    </div>
+    <div class="piede__fine"><span>© 2026 Formaggi Aresu Srl Artigiana · Donori (SU) · P.IVA 03639870926</span><span><a href="#">Privacy</a> · <a href="#">Cookie</a></span></div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+(() => {
+  /* ---------- interfaccia: funziona anche senza librerie ---------- */
+  const testata = document.getElementById('testata');
+  let ultimo = 0;
+  const onScroll = () => {
+    const y = scrollY;
+    testata.classList.toggle('scrollata', y > innerHeight * 0.6);
+    testata.classList.toggle('nascosta', y > 400 && y > ultimo && !document.body.classList.contains('menu-aperto'));
+    ultimo = y;
+  };
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  const btn = document.querySelector('.apri-menu');
+  const chiudi = () => { document.body.classList.remove('menu-aperto'); btn.setAttribute('aria-expanded', 'false'); };
+  btn.addEventListener('click', () => btn.setAttribute('aria-expanded', String(document.body.classList.toggle('menu-aperto'))));
+  document.querySelectorAll('.menu-mobile a').forEach(a => a.addEventListener('click', chiudi));
+
+  // Schede delle categorie, con frecce da tastiera; l'ancora (#caprino…) apre la scheda giusta.
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  const attiva = t => {
+    tabs.forEach(x => { const on = x === t; x.setAttribute('aria-selected', on); x.tabIndex = on ? 0 : -1;
+      document.getElementById(x.getAttribute('aria-controls')).hidden = !on; });
+    history.replaceState(null, '', '#' + t.id.slice(2));
+    window.ScrollTrigger && ScrollTrigger.refresh();
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => attiva(t));
+    t.addEventListener('keydown', e => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) { e.preventDefault(); const n = tabs[(i + d + tabs.length) % tabs.length]; attiva(n); n.focus(); }
+    });
+  });
+  const daAncora = document.getElementById('t-' + location.hash.slice(1));
+  if (daAncora) { attiva(daAncora); document.getElementById('formaggi').scrollIntoView(); }
+
+  /* ---------- animazioni: solo con GSAP e senza «riduci movimento» ---------- */
+  if (!window.gsap || !window.ScrollTrigger || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  gsap.registerPlugin(ScrollTrigger);
+  document.documentElement.classList.add('anima');
+
+  if (window.Lenis) {
+    const lenis = new Lenis({ lerp: .09, smoothWheel: true });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(t => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+
+  gsap.utils.toArray('[data-righe]').forEach(h => {
+    const inHero = h.closest('.hero');
+    gsap.from(h.querySelectorAll('.riga > span'), { yPercent: 110, duration: 1.2, ease: 'expo.out', stagger: .09, delay: inHero ? .3 : 0,
+      scrollTrigger: inHero ? null : { trigger: h, start: 'top 88%' } });
+  });
+  gsap.from('.hero [data-entra]', { y: 28, autoAlpha: 0, duration: 1.1, ease: 'power3.out', stagger: .12, delay: .5 });
+  gsap.utils.toArray('[data-entra]').filter(el => !el.closest('.hero')).forEach(el => {
+    gsap.from(el, { y: 28, autoAlpha: 0, duration: 1.1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
+  });
+
+  // Hero: la foto scende più lenta della pagina, il testo sfuma salendo.
+  gsap.to('.hero__media img', { yPercent: 12, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
+  gsap.to('.hero__contenuto', { y: -80, autoAlpha: 0, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: '70% top', scrub: true } });
+
+  gsap.utils.toArray('[data-rivela]').forEach(f => {
+    gsap.from(f, { clipPath: 'inset(100% 0 0 0)', duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: f, start: 'top 85%' } });
+  });
+  gsap.utils.toArray('[data-parallasse]').forEach(img => {
+    gsap.fromTo(img, { yPercent: -7 }, { yPercent: 7, ease: 'none', scrollTrigger: { trigger: img.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } });
+  });
+
+  addEventListener('load', () => ScrollTrigger.refresh());
+})();
+</script>
+</body>
+</html>
